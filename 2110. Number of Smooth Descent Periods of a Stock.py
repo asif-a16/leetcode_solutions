@@ -1,27 +1,23 @@
 class Solution:
     def getDescentPeriods(self, prices: List[int]) -> int:
-        smooth_descent_periods = len(prices)
-        
-        current_window_size = 2
-        
-        def isSmooth(l, r):
-            while l != r:
-                if prices[l] - prices[l + 1] != 1:
-                    return False
-                l += 1
-            return True
+        uncontiguous_idxs = [0]
+        prices_length = len(prices)
+        smooth_descent_periods = 0
 
-        left = 0
+        if prices_length != 1:
+            for i in range(1, prices_length):
+                if prices[i-1] - prices[i] != 1:
+                    uncontiguous_idxs.append(i)
 
-        if len(prices) != 1:
-            while current_window_size != len(prices):
-                for right in range(current_window_size - 1, len(prices)):
-                    if isSmooth(left, right):
-                        smooth_descent_periods += 1
-                    left += 1
-                current_window_size += 1
-                left = 0
+        uncontiguous_idxs.append(prices_length)
 
+        for i in range(1, len(uncontiguous_idxs)):
+            smooth_range = uncontiguous_idxs[i] - uncontiguous_idxs[i-1]
+            smoothness = 0.5 * smooth_range * (smooth_range + 1)
+            smooth_descent_periods += smoothness
+
+        smooth_descent_periods = int(smooth_descent_periods)
+        print(uncontiguous_idxs)
         print(smooth_descent_periods)
         return smooth_descent_periods
     
