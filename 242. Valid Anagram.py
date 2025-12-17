@@ -3,10 +3,8 @@ class Solution:
         if len(s) != len(t):
             return False
         
-        working = [ord(letter) for letter in s]
-        for letter in t:
-            if ord(letter) in working:
-                working.remove(ord(letter))
-            else:
+        for char in set(s):
+            if s.count(char) != t.count(char):
                 return False
+            
         return True
