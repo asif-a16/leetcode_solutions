@@ -1,18 +1,21 @@
 class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums = sorted(nums)
         n_len = len(nums)
         res = set()
-        sett = {}
 
         for i in range(n_len):
             pivot = -nums[i]
-            for j in range(i+1, n_len):
-                if pivot - nums[j] in sett:
-                    k = sett[pivot - nums[j]]
-                    sorted_ans = tuple(sorted([nums[i], nums[k], nums[j]]))
-                    if i != k and k != j and i != j:
-                        res.add(tuple(sorted_ans))
-                    continue
-                sett[nums[j]] = j
+            left = 0
+            right = n_len - 1
+            while left < right:
+                if nums[left] + nums[right] < pivot or left == i:
+                    left += 1
+                elif nums[left] + nums[right] > pivot or right == i:
+                    right -= 1
+                elif nums[left] + nums[right] == pivot:
+                    res.add(tuple(sorted([nums[i], nums[left], nums[right]])))
+                    left += 1
+                    right -= 1
     
         return list(res)
