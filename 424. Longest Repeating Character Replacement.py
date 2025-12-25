@@ -1,23 +1,16 @@
-from collections import deque
 class Solution:
     def characterReplacement(self, s: str, k: int) -> int:
+        count = {}
         left = 0
-        right = 0
-        maxf = 0
-        answer = 1
-        while right < len(s):
-            window = s[left:right + 1]
-            chars = set(window)
-            most_frequent = 0
-            for char in chars:
-                most_frequent = max(most_frequent, window.count(char))
+        result = 0
 
-            maxf = max(maxf, most_frequent)
-            if len(window) - maxf > k:
+        for right in range(len(s)):
+            count[s[right]] = count.get(s[right], 0) + 1
+            
+            if right - left + 1 - max(count.values()) > k:
+                count[s[left]] -= 1
                 left += 1
-            else:
-                right += 1
 
-            answer = max(answer, right - left)
+            result = max(result, right - left + 1)
         
-        return answer
+        return result
