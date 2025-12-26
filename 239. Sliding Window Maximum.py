@@ -1,29 +1,21 @@
-from sortedcontainers import SortedList
+from collections import deque
 class Solution:
     def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
         if len(nums) == k:
             return [max(nums)]
         
         left = 0
-        max_num = 0
+        window = deque()
         result = []
-        window = SortedList()
 
         for right, num in enumerate(nums):
-            if right < k - 1:
-                window.add(num)
-                continue
-            elif right == k - 1:
-                window.add(num)
-                result.append(window[-1])
-                continue
-            
-            window.remove(nums[left])
-            window.add(num)
-            left += 1
-
-            max_num = window[-1]
-                
-            result.append(max_num)
-            
+            while window and nums[window[-1]] < num:
+                window.pop()
+            window.append(right)
+            if left > window[0]:
+                window.popleft()
+            if right + 1 >= k:
+                result.append(nums[window[0]])
+                left += 1
+        
         return result
