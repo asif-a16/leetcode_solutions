@@ -16,11 +16,12 @@ class Solution:
             head = head.next
 
         while nodes:
-            if len(nodes) > 2:
+            if len(nodes) >= 2:
                 left = nodes.popleft()
                 left.next = nodes[-1]
                 right = nodes.pop()
                 right.next = nodes[0] if nodes else None
                 continue
-            remaining = nodes.pop()
-            remaining.next = None
+            if nodes:
+                remaining = nodes.pop()
+                remaining.next = None
