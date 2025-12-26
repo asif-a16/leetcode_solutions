@@ -1,36 +1,31 @@
-from collections import deque, defaultdict
 class Solution:
     def minWindow(self, s: str, t: str) -> str:
-        left = 0
-        result = ""
-        matches = deque()
-        count = defaultdict(int)
+        if t == "": return ""
+
+        t_count, window = {}, {}
 
         for char in t:
-            count[char] += 1
+            t_count[char] = 1 + t_count.get(char, 0)
 
-        for right in range(len(s)):
-            if s[right] in count:
-                count[s[right]] -= 1
-                matches.append(right)
+        have, need = 0, len(t_count)
+        res, res_len = [-1, -1], float("inf")
+        left = 0
 
-            if not matches:
+        for right, char in enumerate(s):
+            window[char] = 1 + window.get(char, 0)
+
+            if char in t_count and window[char] == t_count[char]:
+                have += 1
+
+            while have == need:
+                if right - left + 1 < res_len:
+                    res = [left, right]
+                    res_len = right - left + 1
+
+                window[s[left]] -= 1
+                if s[left] in t_count and window[s[left]] < t_count[s[left]]:
+                    have -= 1
                 left += 1
 
-            if right - left + 1 == len(t) and max(count.values()) == 0:
-                return s[left:right + 1]
-
-            while max(count.values()) <= 0:
-                while left + 1 < len(s) and s[left] == s[left + 1] and count[s[left]] < 0:
-                    matches.popleft()
-                    count[s[left]] += 1
-                    left += 1
-
-                if right - left + 1 < len(result) or result == "":
-                    result = s[left:right + 1]
-                
-                count[s[left]] += 1
-                matches.popleft()
-                left = matches[0] if matches else left
-
-        return result
+        left, right = res
+        return s[left:right+1] if res_len != float("inf") else ""
