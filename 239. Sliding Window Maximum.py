@@ -1,25 +1,29 @@
+from sortedcontainers import SortedList
 class Solution:
     def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
         if len(nums) == k:
             return [max(nums)]
         
-        left = 1
+        left = 0
         max_num = 0
         result = []
+        window = SortedList()
 
         for right, num in enumerate(nums):
             if right < k - 1:
-                max_num = max(max_num, num)
+                window.add(num)
                 continue
             elif right == k - 1:
-                result.append(max(max_num, num))
+                window.add(num)
+                result.append(window[-1])
                 continue
-
-            max_num = float("-inf")
-            for i in range(left, right + 1):
-                max_num = max(max_num, nums[i])
-                
-            result.append(max_num)
+            
+            window.remove(nums[left])
+            window.add(num)
             left += 1
 
+            max_num = window[-1]
+                
+            result.append(max_num)
+            
         return result
