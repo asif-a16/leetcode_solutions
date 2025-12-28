@@ -5,29 +5,31 @@
 #         self.next = next
 class Solution:
     def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
-        dummy = ListNode(0)
-        cur = dummy
-        list_empty = False
-        nodes = {}
+        if not lists: return None
 
-        for idx, node in enumerate(lists):
-            nodes[idx] = node
+        def mergeList(l1, l2):
+            dummy = ListNode()
+            tail = dummy
+            while l1 and l2:
+                if l1.val < l2.val:
+                    tail.next = ListNode(l1.val)
+                    l1 = l1.next
+                    tail = tail.next
+                else:
+                    tail.next = ListNode(l2.val)
+                    l2 = l2.next
+                    tail = tail.next
+            if l1:
+                tail.next = l1
+            if l2:
+                tail.next = l2
+            return dummy.next
 
-        while not list_empty:
-            cur_min = float("inf")
-            min_head_idx = None
-            list_empty = True
-
-            for i in range(len(nodes)):
-                head = nodes[i]
-                if head and head.val < cur_min:
-                    list_empty = False
-                    cur_min = head.val
-                    min_head_idx = i
-
-            if list_empty: break
-            cur.next = ListNode(cur_min)
-            cur = cur.next
-            nodes[min_head_idx] = nodes[min_head_idx].next
-
-        return dummy.next
+        while len(lists) > 1:
+            merged_lists = []
+            for i in range(0, len(lists), 2):
+                l1 = lists[i]
+                l2 = lists[i + 1] if i + 1 < len(lists) else None
+                merged_lists.append(mergeList(l1, l2))
+            lists = merged_lists
+        return lists[0]
