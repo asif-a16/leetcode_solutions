@@ -10,8 +10,8 @@ class Solution:
             return root
         
         root.left, root.right = root.right, root.left
-        if root.left:
-            root.left = self.invertTree(root.left)
-        if root.right:
-            root.right = self.invertTree(root.right)
+
+        root.left = self.invertTree(root.left)
+        root.right = self.invertTree(root.right)
+        
         return root
