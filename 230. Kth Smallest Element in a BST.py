@@ -4,19 +4,28 @@
 #         self.val = val
 #         self.left = left
 #         self.right = right
-from sortedcontainers import SortedList
 class Solution:
     def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
-        values = []
+        self.k = 0
+        self.result = None
         
-        def dfs(node):
+        def inOrderTraverse(node):
             if not node:
-                return
-            values.add(node.val)
-            dfs(node.left)
-            dfs(node.right)
-
-        dfs(root)
-        values.sort()
-
-        return values[k-1]
+                return None
+            
+            left = inOrderTraverse(node.left)
+            if left:
+                return left
+            
+            self.k += 1
+            if self.k == k:
+                self.result = node.val
+                return node.val
+            
+            right = inOrderTraverse(node.right)
+            if right:
+                return right
+            
+        inOrderTraverse(root)
+        
+        return self.result
