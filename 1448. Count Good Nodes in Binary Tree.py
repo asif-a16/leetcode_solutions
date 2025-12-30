@@ -8,7 +8,7 @@ class Solution:
     def goodNodes(self, root: TreeNode) -> int:
         self.good_nodes = 0
 
-        def helper(node, path_max):
+        def dfs(node, path_max):
             if not node:
                 return 0
             
@@ -16,9 +16,9 @@ class Solution:
                 self.good_nodes += 1
                 path_max = node.val
 
-            helper(node.left, path_max)
-            helper(node.right, path_max)
+            dfs(node.left, path_max)
+            dfs(node.right, path_max)
 
-        helper(root, root.val)
-        
+        dfs(root, root.val)
+
         return self.good_nodes
