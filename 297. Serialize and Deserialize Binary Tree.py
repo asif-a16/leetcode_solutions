@@ -13,73 +13,39 @@ class Codec:
         :type root: TreeNode
         :rtype: str
         """
-        queue = deque([root])
         builder = []
-        cur = root
-        while queue:
-            node = queue.popleft()
-
+        def dfs(node):
             if not node:
-                builder.append("-#")
-                continue
+                builder.append("n")
+                return
 
-            builder.append(f"{node.val}#")
-            queue.append(node.left)
-            queue.append(node.right)
+            builder.append(f"{node.val}")
+            dfs(node.left)
+            dfs(node.right)
 
-        return "".join(builder)
-
+        dfs(root)
+        return ",".join(builder)
         
-
     def deserialize(self, data):
         """Decodes your encoded data to tree.
         
         :type data: str
         :rtype: TreeNode
         """
-        print(data)
-        data = deque(data)
-        builder = []
-        node_vals = deque()
-        while data:
-            while data[0] != "#":
-                builder.append(data.popleft())
+        data = data.split(",")
+        self.i = 0
 
-            data.popleft()
-
-            value = "".join(builder)
-
-            if value == "-":
-                node_vals.append(None)
-            else:
-                node_vals.append(int(value))
-
-            builder = []
-
-        root = TreeNode(node_vals.popleft())
-        queue = deque([root])
-        while queue:
-            node = queue.popleft()
-            if not node:
-                continue
-
-            if node_vals:
-                if node_vals[0] != None:
-                    node.left = TreeNode(node_vals.popleft())
-                else:
-                    node_vals.popleft()
-                    
-            if node_vals:
-                if node_vals[0] != None:
-                    node.right = TreeNode(node_vals.popleft())
-                else:
-                    node_vals.popleft()
-
-            queue.append(node.left)
-            queue.append(node.right)
-
-        return root
+        def dfs():
+            if data[self.i] == "n":
+                self.i += 1
+                return None
+            node = TreeNode(int(data[self.i]))
+            self.i += 1
+            node.left = dfs()
+            node.right = dfs()
+            return node
         
+        return dfs()
 
 # Your Codec object will be instantiated and called as such:
 # ser = Codec()
