@@ -26,10 +26,9 @@ class Solution:
                     cur = stack.pop()
                     inorder.popleft()
 
-                # build right subtree if preorder remains
-                if preorder:
-                    cur.right = TreeNode(preorder.popleft())
-                    stack.append(cur.right)
-                    cur = cur.right
+                # build right subtree
+                cur.right = TreeNode(preorder.popleft())
+                stack.append(cur.right)
+                cur = cur.right
 
         return root
