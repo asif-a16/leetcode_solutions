@@ -13,18 +13,25 @@ class Codec:
         :type root: TreeNode
         :rtype: str
         """
-        builder = []
-        def dfs(node):
-            if not node:
-                builder.append("n")
-                return
+        if not root:
+            return "n"
 
-            builder.append(f"{node.val}")
-            dfs(node.left)
-            dfs(node.right)
+        result = []
+        stack = [root]
 
-        dfs(root)
-        return ",".join(builder)
+        while stack:
+            node = stack.pop()
+
+            if node is None:
+                result.append("n")
+                continue
+
+            result.append(str(node.val))
+
+            stack.append(node.right)
+            stack.append(node.left)
+
+        return ",".join(result)
         
     def deserialize(self, data):
         """Decodes your encoded data to tree.
@@ -32,20 +39,39 @@ class Codec:
         :type data: str
         :rtype: TreeNode
         """
-        data = data.split(",")
-        self.i = 0
+        data = deque(data.split(","))
+        if not data or data[0] == "n":
+            return None
 
-        def dfs():
-            if data[self.i] == "n":
-                self.i += 1
-                return None
-            node = TreeNode(int(data[self.i]))
-            self.i += 1
-            node.left = dfs()
-            node.right = dfs()
-            return node
-        
-        return dfs()
+        root = TreeNode(int(data.popleft()))
+        stack = [(root, "left")]  # (node, next_child_to_fill)
+
+        while data:
+            val = data.popleft()
+            node, state = stack[-1]
+
+            if state == "left":
+                if val == "n":
+                    node.left = None
+                    stack[-1] = (node, "right")
+                else:
+                    new_node = TreeNode(int(val))
+                    node.left = new_node
+                    stack[-1] = (node, "right")
+                    stack.append((new_node, "left"))
+
+            else:  # state == "right"
+                if val == "n":
+                    node.right = None
+                    stack.pop()
+                else:
+                    new_node = TreeNode(int(val))
+                    node.right = new_node
+                    stack.pop()
+                    stack.append((new_node, "left"))
+
+        return root
+
 
 # Your Codec object will be instantiated and called as such:
 # ser = Codec()
