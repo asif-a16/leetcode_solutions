@@ -1,16 +1,18 @@
 class Solution:
     def combinationSum(self, candidates, target):
-        candidates.sort()
+        result = []
 
-        combinations_for_sum = [[] for _ in range(target + 1)]
-        combinations_for_sum[0] = [[]]
+        def dfs(start, current_sum, path):
+            if current_sum == target:
+                result.append(path[:])
+                return
+            if current_sum > target:
+                return
 
-        for candidate in candidates:
-            for current_sum in range(candidate, target + 1):
-                remaining_sum = current_sum - candidate
+            for i in range(start, len(candidates)):
+                path.append(candidates[i])
+                dfs(i, current_sum + candidates[i], path)
+                path.pop()
 
-                for previous_combination in combinations_for_sum[remaining_sum]:
-                    new_combination = previous_combination + [candidate]
-                    combinations_for_sum[current_sum].append(new_combination)
-
-        return combinations_for_sum[target]
+        dfs(0, 0, [])
+        return result
