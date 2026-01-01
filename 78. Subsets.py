@@ -5,7 +5,7 @@ class Solution:
         for num in nums:
             for elem in result[:]:
                 copy = elem[:]
-                elem.append(num)
+                copy.append(num)
                 result.append(copy) 
 
         return result
