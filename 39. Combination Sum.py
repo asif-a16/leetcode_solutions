@@ -1,27 +1,16 @@
 class Solution:
-    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
-        result = []
+    def combinationSum(self, candidates, target):
+        candidates.sort()
 
-        def dfs(i, builder):
-            if i > len(candidates):
-                if sum(builder)  == target:
-                    result.append(builder[:])
-                return
-            
-            builder_sum = sum(builder)
-            if builder_sum == target:
-                result.append(builder[:])
-                return
-            
-            if builder_sum > target:
-                return
-            
-            if builder_sum + candidates[i] < target:
-                dfs(i, builder.append(candidates[i]))
+        combinations_for_sum = [[] for _ in range(target + 1)]
+        combinations_for_sum[0] = [[]]
 
-            dfs(i + 1, builder.append(candidates[i]))
-            dfs(i + 1, builder)
+        for candidate in candidates:
+            for current_sum in range(candidate, target + 1):
+                remaining_sum = current_sum - candidate
 
-        dfs(0, [])
+                for previous_combination in combinations_for_sum[remaining_sum]:
+                    new_combination = previous_combination + [candidate]
+                    combinations_for_sum[current_sum].append(new_combination)
 
-        return result
+        return combinations_for_sum[target]
