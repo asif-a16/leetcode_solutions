@@ -1,6 +1,5 @@
 class Solution:
     def permute(self, nums: List[int]) -> List[List[int]]:
-        nums = set(nums)
         result = []
 
         def permute(path: list, candidates: set):
@@ -14,5 +13,5 @@ class Solution:
                 candidates.add(num)
                 path.pop()
 
-        permute([], nums)
+        permute([], set(nums))
         return result
