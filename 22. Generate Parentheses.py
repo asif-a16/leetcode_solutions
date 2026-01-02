@@ -1,27 +1,22 @@
 class Solution:
     def generateParenthesis(self, n: int) -> List[str]:
         result = []
-        def is_valid(brackets: str) -> bool:
-            stack = []
-            for char in brackets:
-                if char == "(":
-                    stack.append("(")
-                else:
-                    if stack and stack[-1] == "(":
-                        stack.pop()
-                    else:
-                        return False
-            return not stack
 
-        def dfs(path: str):
-            if len(path) >= 2 * n:
-                if is_valid(path):
-                    result.append(path[:])
+        def dfs(path: list[str], num_left_brackets: int, num_right_brackets: int):
+            if len(path) == 2 * n:
+                result.append("".join(path))
                 return
             
-            dfs(path + "(")
-            dfs(path + ")")
+            if num_left_brackets < n:
+                path.append("(")
+                dfs(path, num_left_brackets + 1, num_right_brackets)
+                path.pop()
 
-        dfs("")
+            if num_right_brackets < num_left_brackets:
+                path.append(")")
+                dfs(path, num_left_brackets, num_right_brackets + 1)
+                path.pop()
+
+        dfs([], 0, 0)
 
         return result
