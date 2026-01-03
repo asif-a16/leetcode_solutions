@@ -6,18 +6,19 @@ class Solution:
             while left < right:
                 if s[left] != s[right]:
                     return False
-                left, right = left + 1, right - 1
+                left += 1
+                right -= 1
             return True
 
-        def dfs(i: int, current_partition: list):
-            if i == len(s):
+        def dfs(start: int, current_partition: list):
+            if start == len(s):
                 result.append(current_partition[:])
                 return
             
-            for j in range(i, len(s)):
-                if is_palindrome(i, j):
-                    current_partition.append(s[i:j+1])
-                    dfs(j+1, current_partition)
+            for end in range(start, len(s)):
+                if is_palindrome(start, end):
+                    current_partition.append(s[start:end+1])
+                    dfs(end+1, current_partition)
                     current_partition.pop()
 
         dfs(0, [])
