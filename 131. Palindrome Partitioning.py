@@ -1,26 +1,16 @@
 class Solution:
     def partition(self, s: str) -> List[List[str]]:
-        result = []
-        n = len(s)
+        # partitions_from[i] = all palindrome partitions of s[i:]
+        partitions_from = [[] for _ in range(len(s) + 1)]
+        partitions_from[len(s)] = [[]]  # base case: one way to partition empty suffix
 
-        # Precompute palindrome table
-        is_palindrome = [[False] * n for _ in range(n)]
-        for left in range(n - 1, -1, -1):
-            for right in range(left, n):
-                if (s[left] == s[right] and 
-                    (right - left <= 2 or is_palindrome[left + 1][right - 1])):
-                    is_palindrome[left][right] = True
+        for start in range(len(s) - 1, -1, -1):
+            for end in range(start + 1, len(s) + 1):
+                substring = s[start:end]
 
-        def dfs(start: int, current_partition: list):
-            if start == n:
-                result.append(current_partition[:])
-                return
-            
-            for end in range(start, n):
-                if is_palindrome[start][end]:
-                    current_partition.append(s[start:end + 1])
-                    dfs(end + 1, current_partition)
-                    current_partition.pop()
+                if substring == substring[::-1]:  # check palindrome
+                    for suffix_partition in partitions_from[end]:
+                        partition = [substring] + suffix_partition
+                        partitions_from[start].append(partition)
 
-        dfs(0, [])
-        return result
+        return partitions_from[0]
