@@ -4,27 +4,30 @@
 #         self.val = val
 #         self.left = left
 #         self.right = right
-from collections import defaultdict, deque
 class Solution(object):
     def maxLevelSum(self, root):
-        queue = deque([(root, 1)])
-        level_sums = defaultdict(int)
+        queue = [root]
+        cur_level = 1
+        cur_max_sum = float('-inf')
         result = 1
-        cur_max_sum = float("-inf")
 
         while queue:
-            node, level = queue.popleft()
-            if not node:
-                continue
+            level_sum = 0
+            next_level = []
 
-            level_sums[level] += node.val
+            for node in queue:
+                level_sum += node.val
 
-            queue.append((node.left, level + 1))
-            queue.append((node.right, level + 1))
-        
-        for level, level_sum in level_sums.items():
+                if node.left:
+                    next_level.append(node.left)
+                if node.right:
+                    next_level.append(node.right)
+
             if level_sum > cur_max_sum:
                 cur_max_sum = level_sum
-                result = level
-                
+                result = cur_level
+
+            queue = next_level
+            cur_level += 1
+
         return result
