@@ -1,6 +1,8 @@
 class Solution:
     def longestPalindrome(self, s: str) -> str:
-        res = s[0]
+        res_left = 0
+        res_right = 0
+        
         i = 0
         skip_forward: bool = False
 
@@ -17,8 +19,8 @@ class Solution:
                 left -= 1
                 right += 1
 
-            if right + 1 - left > len(res):
-                res = s[left:right + 1]
+            if right - left > res_right - res_left:
+                res_right, res_left = right, left
 
             if skip_forward:
                 skip_forward = False
@@ -26,4 +28,4 @@ class Solution:
             else:
                 i += 1
 
-        return res
+        return s[res_left:res_right + 1]
