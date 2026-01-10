@@ -1,34 +1,18 @@
 class Solution:
     def coinChange(self, coins: List[int], amount: int) -> int:
-        if amount == 0: return 0
+        reachable_bits = 1 << amount
+        coins_used = 0
 
-        coins = sorted(coins, reverse=True)
-        memo = {}
+        while (reachable_bits & 1) == 0:
+            next_reachable_bits = 0
 
-        for coin in coins:
-            memo[coin] = 1
-
-        def dp(s_amount: int):
-            if s_amount in memo:
-                return memo[s_amount]
-            
             for coin in coins:
-                if coin > s_amount:
-                    continue
+                next_reachable_bits |= reachable_bits >> coin
 
-                change = dp(s_amount - coin)
+            if next_reachable_bits == reachable_bits:
+                return -1
+            
+            coins_used += 1
+            reachable_bits = next_reachable_bits
 
-                if change == 0:
-                    continue
-                if (s_amount in memo and memo[s_amount] > change + 1 or 
-                    s_amount not in memo):
-                    memo[s_amount] = change + 1
-            
-            if s_amount in memo:
-                return memo[s_amount]
-            
-            memo[s_amount] = 0
-            return 0
-        
-        dp(amount)
-        return memo[amount] if memo[amount] else -1
+        return coins_used
