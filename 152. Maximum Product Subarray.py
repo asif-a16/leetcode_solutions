@@ -1,10 +1,31 @@
-import math
 class Solution:
-    def maxProduct(self, nums: List[int]) -> int:
-        cur_max = float("-inf")
-        for i in range(len(nums)):
-            for j in range(i, len(nums)):
-                prod = math.prod(nums[i:j+1])
-                cur_max = max(cur_max, prod)
+    def maxProdSearch(self, nums: List[int]) -> int:
+        max_found = nums[0]
+        previous_negative_subarray = None
+        current_subarray = 1
 
-        return cur_max
+        for num in nums:
+            if num == 0:
+                max_found = max(max_found, 0)
+                current_subarray = 1
+                previous_negative_subarray = None
+                continue
+
+            if num < 0:
+                if previous_negative_subarray:
+                    current_subarray *= previous_negative_subarray * num
+                    previous_negative_subarray = None
+                    max_found = max(max_found, current_subarray)
+                else:
+                    previous_negative_subarray = current_subarray * num
+                    current_subarray = 1
+                continue
+
+            current_subarray *= num
+            max_found = max(max_found, current_subarray)
+        
+        return max_found
+
+    def maxProduct(self, nums: List[int]) -> int:
+        return max(self.maxProdSearch(nums), 
+                   self.maxProdSearch(nums[::-1]))
