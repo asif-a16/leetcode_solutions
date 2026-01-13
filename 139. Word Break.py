@@ -1,26 +1,13 @@
 class Solution:
     def wordBreak(self, s: str, wordDict: List[str]) -> bool:
-        wordDict = set(wordDict)
-        memo = {}
+        cache = [False] * len(s) + 1
+        cache[len(s)] = True
 
-        def dp(left: int, right: int):
-            if left == right == len(s):
-                return True
-            
-            if right == len(s):
-                return False
-            
-            alter = False
-            if s[left:right+1] in wordDict:
-                if (right + 1, right + 1) in memo:
-                    alter = memo[(right + 1, right + 1)]
-                else:
-                    memo[(right + 1, right + 1)] = dp(right + 1, right + 1)
-                    alter = memo[(right + 1, right + 1)]
+        for i in range(len(s), -1, -1):
+            for word in wordDict:
+                if i + len(word) <= len(s) and s[i:i+len(word)] == word:
+                    cache[i] = cache[i + len(word)]
+                if cache[i]:
+                    break
 
-            if (left, right + 1) not in memo:
-                memo[(left, right + 1)] = dp(left, right + 1)
-
-            return memo[(left, right + 1)] or alter
-        
-        return dp(0, 0)
+        return cache[0]
