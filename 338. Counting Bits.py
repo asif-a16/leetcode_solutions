@@ -1,11 +1,10 @@
-import math
 class Solution:
     def countBits(self, n: int) -> List[int]:
         result = [0] * (n + 1)
         current_highest_power_of_two = None
 
         for num in range(1, n + 1):
-            if math.log2(num).is_integer():
+            if not num & (num - 1):
                 current_highest_power_of_two = num
                 result[num] = 1
             else:
