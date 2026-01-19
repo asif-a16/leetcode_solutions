@@ -1,43 +1,28 @@
+from collections import deque
+
 class Solution:
     def pacificAtlantic(self, heights: List[List[int]]) -> List[List[int]]:
-        pacific = set()
-        atlantic = set()
-
-        def dfs(row: int, col: int):
-            possible_positions = [
-                (row - 1, col), # up
-                (row + 1, col), # down
-                (row, col - 1), # left
-                (row, col + 1)  # right
-            ]
-
-            for roww, coll in possible_positions:
-                if roww < 0 or coll < 0:
-                    pacific.add((row, col))
-                    continue
-                if roww >= len(heights) or coll >= len(heights[0]):
-                    atlantic.add((row, col))
-                    continue
-
-                if (roww, coll) in atlantic:
-                    atlantic.add((row, col))
-                    continue
-                if (roww, coll) in pacific:
-                    pacific.add((row, col))
-                    continue
-
-                dfs(roww, coll)
-
-
-        for row in range(len(heights)):
-            for col in range(len(heights[0])):
-                if (row, col) in pacific or (row, col) in atlantic:
-                    continue
-                dfs(row, col)
-
-        result = []
-        for row, col in pacific:
-            if (row, col) in atlantic:
-                result.append([row, col])
-
-        return result
+        m, n = len(heights), len(heights[0])
+        
+        def bfs_from_ocean(start_cells):
+            queue = deque(start_cells)
+            visited = set(start_cells)
+            
+            while queue:
+                r, c = queue.popleft()
+                for dr, dc in [(0,1),(1,0),(0,-1),(-1,0)]:
+                    nr, nc = r + dr, c + dc
+                    if (0 <= nr < m and 0 <= nc < n and 
+                        (nr, nc) not in visited and 
+                        heights[nr][nc] >= heights[r][c]):
+                        visited.add((nr, nc))
+                        queue.append((nr, nc))
+            return visited
+        
+        pacific_start = [(0, c) for c in range(n)] + [(r, 0) for r in range(1, m)]
+        pacific_reachable = bfs_from_ocean(pacific_start)
+         
+        atlantic_start = [(m-1, c) for c in range(n)] + [(r, n-1) for r in range(m-1)]
+        atlantic_reachable = bfs_from_ocean(atlantic_start)
+        
+        return list(pacific_reachable & atlantic_reachable)
