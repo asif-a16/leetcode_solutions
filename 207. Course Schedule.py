@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import List
 class Solution:
     def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
         if not prerequisites:
@@ -17,9 +18,10 @@ class Solution:
                 return True
             
             visited.add(course)
-            
+
             for pre in pre_map[course]:
-                if not dfs(pre): return False
+                if not dfs(pre): 
+                    return False
 
             visited.remove(course)
             pre_map[course] = []
@@ -27,6 +29,7 @@ class Solution:
             return True
         
         for course in range(numCourses):
-            if not dfs(course): return False
+            if not dfs(course): 
+                return False
 
         return True
