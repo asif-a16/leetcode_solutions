@@ -39,10 +39,10 @@ class Solution:
 
         result = set()
 
-        def search(row: int, col: int, word_builder: List[str], visited: set, root: TrieNode = None):
+        def search(row: int, col: int, word_builder: List[str], visited: set, cur_node: TrieNode = None):
             word_builder.append(board[row][col])
 
-            if root and root.is_terminal:
+            if cur_node and cur_node.is_terminal:
                 result.add("".join(word_builder))
 
             visited.add((row, col))
@@ -54,18 +54,15 @@ class Solution:
                  (row, col + 1)  # right
             ]
 
-            for pos in possible_pos:
-                if not(0 <= pos[0] < len(board) and    # check row valid
-                    0 <= pos[1] < len(board[0]) and # check col valid
-                    pos not in visited):            # check not visited
+            for (i, j) in possible_pos:
+                if not(0 <= i < len(board) and         # check row valid
+                    0 <= j < len(board[0]) and         # check col valid
+                    (i, j) not in visited and          # check not visited
+                    board[i][j] in cur_node.children): # check in children
                     continue
-                
-                next_node = trie.isPrefix(board[pos[0]][pos[1]], root)
-                
-                if not next_node:
-                    continue
-                
-                search(pos[0], pos[1], word_builder[:], visited.copy(), next_node)
+
+                next_node = cur_node.children[board[i][j]]
+                search(i, j, word_builder[:], visited.copy(), next_node)
 
         for i in range(len(board)):
             for j, letter in enumerate(board[i]):
