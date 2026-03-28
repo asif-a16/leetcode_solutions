@@ -1,7 +1,8 @@
 class TrieNode:
     def __init__(self):
         self.children = {}
-        self.is_terminal = False
+        self.word = None
+
 
 class Trie:
     def __init__(self):
@@ -14,21 +15,8 @@ class Trie:
                 cur.children[char] = TrieNode()
             cur = cur.children[char]
 
-        cur.is_terminal = True
-    
-    def isPrefix(self, prefix: str, root: TrieNode = None):
-        cur = self.root
+        cur.word = word
 
-        if root != None:
-            cur = root
-
-        for char in prefix:
-            if char not in cur.children:
-                return False
-            cur = cur.children[char]
-
-        return cur
-    
 
 class Solution:
     def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
@@ -37,16 +25,23 @@ class Solution:
         for word in words:
             trie.insert(word)
 
-        result = set()
+        result = []
+        rows, cols = len(board), len(board[0])
 
-        def search(row: int, col: int, word_builder: List[str], visited: set, cur_node: TrieNode = None):
-            word_builder.append(board[row][col])
+        def search(row: int, col: int, cur_node: TrieNode):
+            char = board[row][col]
 
-            if cur_node and cur_node.is_terminal:
-                result.add("".join(word_builder))
+            if char not in cur_node.children:
+                return
 
-            visited.add((row, col))
-            
+            next_node = cur_node.children[char]
+
+            if next_node.word != None:
+                result.append(next_node.word)
+                next_node.word = None
+
+            board[row][col] = "#"
+
             possible_pos = [
                  (row - 1, col), # up
                  (row + 1, col), # down
@@ -55,19 +50,24 @@ class Solution:
             ]
 
             for (i, j) in possible_pos:
-                if not(0 <= i < len(board) and         # check row valid
-                    0 <= j < len(board[0]) and         # check col valid
-                    (i, j) not in visited and          # check not visited
-                    board[i][j] in cur_node.children): # check in children
+                if not (
+                    0 <= i < rows and   # check row valid
+                    0 <= j < cols and   # check col valid
+                    board[i][j] != "#"  # check not visited
+                ):
                     continue
 
-                next_node = cur_node.children[board[i][j]]
-                search(i, j, word_builder[:], visited.copy(), next_node)
+                search(i, j, next_node)
 
-        for i in range(len(board)):
+            board[row][col] = char
+
+            # prune dead branches of trie
+            if len(next_node.children) == 0 and next_node.word == None:
+                del cur_node.children[char]
+
+        for i in range(rows):
             for j, letter in enumerate(board[i]):
-                next_node = trie.isPrefix(letter)
-                if next_node:
-                    search(i, j, [], set(), next_node)
+                if letter in trie.root.children:
+                    search(i, j, trie.root)
 
-        return list(result)
+        return result
